@@ -7,7 +7,7 @@ import logoNodImage from '../../assets/node.png';
 const LoginScreen = () => {
   const [CURP, setCURP] = useState('');
   const [password, setPassword] = useState('');
-  const [number, setNumber] = useState('');
+  //const [number, setNumber] = useState('');
 
   const elementos = [
     {
@@ -47,7 +47,7 @@ const LoginScreen = () => {
       navigation.navigate('Inicio', { elemento });
     }
     else{
-      alert('Usuario no encontrado!');
+      alert('Por favor, ingresa tus datos');
     }
   };
 
@@ -91,13 +91,6 @@ const LoginScreen = () => {
           secureTextEntry
           onChangeText={setPassword}
           value={password}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Número de teléfono"
-          placeholderTextColor="#8e8e8e"
-          onChangeText={setNumber}
-          value={number}
         />
       </View>
 

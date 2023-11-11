@@ -3,6 +3,7 @@ import { View, Text, Animated, TouchableOpacity, StyleSheet, FlatList, Dimension
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import logoImage from '../images/logo.png';
+import { usePublications } from '../../PublicationContext';
 import { launchImageLibrary } from 'react-native-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
@@ -10,14 +11,15 @@ import * as ImagePicker from 'expo-image-picker';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const Students = ({route}) => {
+const Students = ({ route }) => {
+  const { publications } = usePublications();
   const { elemento } = route.params;
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [titulo, setTitulo] = useState('');
-  const [imageUri, setImageUri] = useState(null);
+  //const [imageUri, setImageUri] = useState(null);
   const navigation = useNavigation();
   const slideAnim = useRef(new Animated.Value(-screenWidth)).current; // Initial position of the menu
-   
+
   const publicacionesData = [
     {
       id: 1,
@@ -26,7 +28,7 @@ const Students = ({route}) => {
     },
     {
       id: 2,
-      titulo: "Publicación 2",
+      titulo: "Reparación de baches en Corregidora, Emiliano Zapata",
       imagen: require('../../assets/reparacion.jpeg'), // Usa `require` para cargar imágenes desde recursos locales
     },
     {
@@ -41,14 +43,14 @@ const Students = ({route}) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.5,
     });
-  
+
     if (!result.canceled) {
       // Accediendo a la imagen seleccionada a través del arreglo 'assets'
       const asset = result.assets[0]; // Suponiendo que sólo seleccionamos una imagen
-  
+
       // La ruta persistente del archivo de la imagen
       const uri = asset.uri;
-  
+
       // ... procede a copiar la imagen a tu directorio si es necesario y actualizar el estado ...
       // Por ejemplo:
       setPublicaciones(prevPublicaciones => [
@@ -59,7 +61,7 @@ const Students = ({route}) => {
           imagen: uri, // Ahora usas la uri del objeto asset
         }
       ]);
-  
+
       // Limpia el título y el URI de la imagen
       setTitulo('');
       setImageUri(null);
@@ -72,46 +74,30 @@ const Students = ({route}) => {
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [isMenuVisible, slideAnim]);
+  }, [isMenuVisible, slideAnim, publications]);
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
-  
-
-  const selectOption = (option) => {
+  /*const selectOption = (option) => {
     console.log(`Opción seleccionada: ${option}`);
     setIsMenuVisible(false);
-  };
+  };*/
   return (
     <View style={styles.container}>
       <Text style={styles.nameText}>{elemento.name}</Text>
       {!isMenuVisible && (
-  <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
-    <Text style={styles.menuButtonText}>Menu ☰</Text>
-  </TouchableOpacity>
-)}
+        <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+          <Text style={styles.menuButtonText}>Menu ☰</Text>
+        </TouchableOpacity>
+      )}
       {/* Main Content */}
       <Image
         source={logoImage}
         style={styles.logo}
         resizeMode="contain"
       />
-      <View style={styles.postInputContainer}>
-        <TextInput
-          style={styles.input}
-          onChangeText={setTitulo}
-          value={titulo}
-          placeholder="Ingresa el título de la publicación"
-        />
-        <TouchableOpacity
-          style={styles.subirImagenButton}
-          onPress={handleSeleccionarImagen} // You should implement this function
-        >
-          <Text style={styles.subirImagenButtonText}>Seleccionar Imagen</Text>
-        </TouchableOpacity>
-      </View>
 
       <FlatList
         data={publicaciones}
@@ -155,14 +141,14 @@ const Students = ({route}) => {
           <FontAwesome name="sign-out" size={30} color="white" />
           <Text style={styles.buttonText}>Cerrar Sesión</Text>
         </TouchableOpacity>
-               {/* Close Button */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setIsMenuVisible(false)}
-      >
-         <FontAwesome name="sign-out" size={30} color="white" />
-        <Text style={styles.buttonText}>Cerrar Menú</Text>
-      </TouchableOpacity>
+        {/* Close Button */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={toggleMenu}
+        >
+          <FontAwesome name="times" size={30} color="white" />
+          <Text style={styles.buttonText}>Cerrar Menú</Text>
+        </TouchableOpacity>
       </Animated.View>
     </View>
   );
@@ -186,8 +172,8 @@ const styles = StyleSheet.create({
     color: '#4267B2',
   },
   logo: {
-    width: screenWidth * 0.8,
-    height: screenHeight * 0.1,
+    width: screenWidth * 0.9,
+    height: screenHeight * 0.2,
     marginTop: screenHeight * 0.05,
   },
   postInputContainer: {
@@ -236,7 +222,7 @@ const styles = StyleSheet.create({
     padding: 20,
     zIndex: 1,
   },
-  
+
   overlay: {
     position: 'absolute',
     top: 0,
@@ -298,21 +284,21 @@ const styles = StyleSheet.create({
     padding: 0,
     marginVertical: 15,
     alignSelf: 'center',
-     width: screenWidth * 0.50,
+    width: screenWidth * 0.50,
   },
   postTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-   
+
   },
   postImage: {
-  width: screenWidth * 0.5, // o cualquier porcentaje deseado del ancho de la pantalla
-  height: screenWidth * 0.5, // asegúrate de que la altura sea igual al ancho para mantener la proporción cuadrada
-  borderRadius: 10,
-},
+    width: screenWidth * 0.5, // o cualquier porcentaje deseado del ancho de la pantalla
+    height: screenWidth * 0.5, // asegúrate de que la altura sea igual al ancho para mantener la proporción cuadrada
+    borderRadius: 10,
+  },
 
-   modalOverlay: {
+  modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end', // Positions the menu at the bottom of the screen
   },
