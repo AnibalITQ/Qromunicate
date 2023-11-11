@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Button } from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 const ReporteDetail = ({ route }) => {
   const { tipo, descripcion } = route.params;
   const [inputText, setInputText] = useState('');
@@ -12,29 +13,35 @@ const ReporteDetail = ({ route }) => {
     alert(`Texto enviado: ${inputText}`);
   };
 
-  const handleSubirImagen = () => {
-  // Configuración para la selección de imágenes
-  const options = {
-    mediaType: 'photo', // Solo permitir seleccionar fotos
-    quality: 0.5, // Calidad de la imagen (0.0 - 1.0)
-  };
-
-  // Abrir el cuadro de diálogo para seleccionar una imagen
-  launchImageLibrary(options, (response) => {
-    if (response.didCancel) {
-      // El usuario canceló la selección de imagen
-    } else if (response.errorMessage) {
-      // Ocurrió un error al seleccionar la imagen
-      console.error('Error al seleccionar la imagen: ', response.errorMessage);
-    } else {
-      // Imagen seleccionada con éxito
-      const { uri } = response;
-
-      // Actualizar el estado 'imageUri' con la ruta de la imagen seleccionada
-      setImageUri(uri);
+  const handleSeleccionarImagen = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.5,
+    });
+  
+    if (!result.canceled) {
+      // Accediendo a la imagen seleccionada a través del arreglo 'assets'
+      const asset = result.assets[0]; // Suponiendo que sólo seleccionamos una imagen
+  
+      // La ruta persistente del archivo de la imagen
+      const uri = asset.uri;
+  
+      // ... procede a copiar la imagen a tu directorio si es necesario y actualizar el estado ...
+      // Por ejemplo:
+      setPublicaciones(prevPublicaciones => [
+        ...prevPublicaciones,
+        {
+          id: prevPublicaciones.length + 1,
+          titulo: titulo,
+          imagen: uri, // Ahora usas la uri del objeto asset
+        }
+      ]);
+  
+      // Limpia el título y el URI de la imagen
+      setTitulo('');
+      setImageUri(null);
     }
-  });
-};
+  };
 
 
   return (
@@ -51,7 +58,7 @@ const ReporteDetail = ({ route }) => {
 
       <Button title="Enviar Texto" onPress={handleEnviarTexto} />
 
-      <TouchableOpacity style={styles.subirImagenButton} onPress={handleSubirImagen}>
+      <TouchableOpacity style={styles.subirImagenButton} onPress={handleSeleccionarImagen}>
         <Text style={styles.subirImagenButtonText}>Subir Imagen</Text>
       </TouchableOpacity>
     </View>
