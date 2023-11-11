@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Button } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
+
 const ReporteDetail = ({ route }) => {
+  const navigation = useNavigation();
   const { tipo, descripcion } = route.params;
   const [inputText, setInputText] = useState('');
   const [imageUri, setImageUri] = useState(null);
-  
+  const [publicaciones, setPublicaciones] = useState([]);
+  const [titulo, setTitulo] = useState('');
 
   const handleEnviarTexto = () => {
     // Aquí puedes implementar la lógica para enviar el texto
@@ -28,18 +32,23 @@ const ReporteDetail = ({ route }) => {
   
       // ... procede a copiar la imagen a tu directorio si es necesario y actualizar el estado ...
       // Por ejemplo:
-      setPublicaciones(prevPublicaciones => [
-        ...prevPublicaciones,
-        {
-          id: prevPublicaciones.length + 1,
-          titulo: titulo,
-          imagen: uri, // Ahora usas la uri del objeto asset
-        }
-      ]);
+      setPublicaciones(prevPublicaciones => {
+        // Actualizas las publicaciones
+        const updatedPublications = [
+          ...prevPublicaciones,
+          {
+            titulo: titulo,
+            imagen: uri, // Ahora usas la uri del objeto asset
+          }
+        ];
+        
+        // Limpia el título y el URI de la imagen
+        setTitulo('');
+        setImageUri(null);
   
-      // Limpia el título y el URI de la imagen
-      setTitulo('');
-      setImageUri(null);
+        // Navega de vuelta a la pantalla de inicio y pasa los datos actualizados como parámetros
+        navigation.navigate('Inicio', { nuevaPublicacion: { titulo: titulo, imagen: uri } });
+      });
     }
   };
 
@@ -50,14 +59,11 @@ const ReporteDetail = ({ route }) => {
       <Text style={styles.descripcion}>{descripcion}</Text>
 
       <TextInput
-        style={styles.input}
-        onChangeText={(text) => setInputText(text)}
-        value={inputText}
-        placeholder="Escribe aquí"
+          style={styles.input}
+          onChangeText={setTitulo}
+          value={titulo}
+          placeholder="Ingresa el título de la publicación"
       />
-
-      <Button title="Enviar Texto" onPress={handleEnviarTexto} />
-
       <TouchableOpacity style={styles.subirImagenButton} onPress={handleSeleccionarImagen}>
         <Text style={styles.subirImagenButtonText}>Subir Imagen</Text>
       </TouchableOpacity>
@@ -68,19 +74,26 @@ const ReporteDetail = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
   header: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: 'lightgrey',
+    width: '100%',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
   },
   body: {
-    flex: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    fontSize: 18,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -92,23 +105,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#0073e6',
-    paddingVertical: 15,
-    paddingHorizontal: 35,
-    borderRadius: 25,
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-    input: {
-    width: '80%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: 'gray',
-    marginTop: 10,
-    padding: 5,
   },
   subirImagenButton: {
     marginTop: 20,

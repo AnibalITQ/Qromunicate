@@ -4,7 +4,6 @@ import LoginScreen from './src/components/LoginScreen';
 import Inicio from './src/pages/Inicio';
 import React from 'react';
 import { PublicationProvider } from './PublicationContext';
-import Students from './Students';
 import DenunciaDetailScreen from './src/pages/DenunciaDetailScreen';
 import DenunciasScreen from './src/pages/DenunciasScreen';
 import ReporteScreen from './src/pages/ReporteScreen';

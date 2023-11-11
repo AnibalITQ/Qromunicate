@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
 const DenunciaDetailScreen = ({ route }) => {
+  const navigation = useNavigation();
   const { tipo, descripcion } = route.params;
-  const [inputText, setInputText] = useState('');
+  const [publicaciones, setPublicaciones] = useState([]);
   const [imageUri, setImageUri] = useState(null);
+  const [titulo, setTitulo] = useState('');
   
-
-  const handleEnviarTexto = () => {
-    // Aquí puedes implementar la lógica para enviar el texto
-    alert(`Texto enviado: ${inputText}`);
-  };
-
   const handleSeleccionarImagen = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -29,33 +26,37 @@ const DenunciaDetailScreen = ({ route }) => {
   
       // ... procede a copiar la imagen a tu directorio si es necesario y actualizar el estado ...
       // Por ejemplo:
-      setPublicaciones(prevPublicaciones => [
-        ...prevPublicaciones,
-        {
-          id: prevPublicaciones.length + 1,
-          titulo: titulo,
-          imagen: uri, // Ahora usas la uri del objeto asset
-        }
-      ]);
+      setPublicaciones(prevPublicaciones => {
+        // Actualizas las publicaciones
+        const updatedPublications = [
+          ...prevPublicaciones,
+          {
+            titulo: titulo,
+            imagen: uri, // Ahora usas la uri del objeto asset
+          }
+        ];
+        
+        // Limpia el título y el URI de la imagen
+        setTitulo('');
+        setImageUri(null);
   
-      // Limpia el título y el URI de la imagen
-      setTitulo('');
-      setImageUri(null);
+        // Navega de vuelta a la pantalla de inicio y pasa los datos actualizados como parámetros
+        navigation.navigate('Inicio', { nuevaPublicacion: { titulo: titulo, imagen: uri } });
+      });
     }
   };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{tipo}</Text>
       <Text style={styles.descripcion}>{descripcion}</Text>
 
       <TextInput
-        style={styles.input}
-        onChangeText={(text) => setInputText(text)}
-        value={inputText}
-        placeholder="Escribe aquí"
+          style={styles.input}
+          onChangeText={setTitulo}
+          value={titulo}
+          placeholder="Ingresa el título de la publicación"
       />
-
-      <Button title="Enviar Texto" onPress={handleEnviarTexto} />
 
       <TouchableOpacity style={styles.subirImagenButton} onPress={handleSeleccionarImagen}>
         <Text style={styles.subirImagenButtonText}>Subir Imagen</Text>
@@ -81,12 +82,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    width: '80%',
-    height: 40,
     borderWidth: 1,
-    borderColor: 'gray',
-    marginTop: 10,
-    padding: 5,
+    borderColor: 'lightgrey',
+    width: '100%',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
   },
   subirImagenButton: {
     marginTop: 20,
@@ -110,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DenunciaDetailScreen
+export default DenunciaDetailScreen;
