@@ -1,28 +1,63 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Text, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; 
-import logoImage from '../../assets/logo.png';
-import logoNodImage from '../../assets/node.png'; // Make sure the path is correct
+import { StyleSheet, View, TextInput, TouchableOpacity, Text, Image, Dimensions } from 'react-native';
+import { useNavigation, Alert } from '@react-navigation/native'; 
+import logoImage from '../images/logo.png';
+import logoNodImage from '../../assets/node.png';
 
 const LoginScreen = () => {
   const [CURP, setCURP] = useState('');
   const [password, setPassword] = useState('');
+  const [number, setNumber] = useState('');
+
+  const elementos = [
+    {
+      name: 'Adolfo Cortes',
+      number: '4461248094',
+      curp: 'COCA030628HMNRRDA1',
+      password: 'clavadovolador'
+    },
+    {
+      name: 'Jose Juan',
+      number: '4461248094',
+      curp: 'COCA030628HMNRRDA1',
+      password: 'pepe'
+    },
+    {
+      name: 'Anibal Tirado',
+      number: '4461248094',
+      curp: 'TIDA030913HQTRLNA3',
+      password: 'anibal'
+    },
+    {
+      name: 'Diego Galvan',
+      number: '4421230358',
+      curp: 'GAMD030810HQTLRGA8',
+      password: 'diego'
+    },
+  ];
+
+  const elemento = elementos.find(elemento => 
+    elemento.curp === CURP && elemento.password === password
+  );
 
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    // Here, insert validation logic before navigating
-    // loginValidationSchema.validate({ email, password }).then(() => {
-    navigation.navigate('Students');
-    // }).catch((error) => {
-    // dkasdasd  Alert.alert("Invalid Login", "The email or password you entered is incorrect.");
-    // });
+    if(elemento){
+      navigation.navigate('Inicio', { elemento });
+    }
+    else{
+      alert('Usuario no encontrado!');
+    }
   };
 
   const handleRegistration = () => {
-    // Navigate to the registration screen
-    navigation.navigate('Registration'); // Replace 'Registration' with the name of your registration screen
+    navigation.navigate('Registration');
   };
+
+  // Obtener dimensiones de la pantalla
+  const screenWidth = Dimensions.get('window').width;
+  const screenHeight = Dimensions.get('window').height;
 
   return (
     <View style={styles.container}>
@@ -30,11 +65,13 @@ const LoginScreen = () => {
       <View style={styles.logoWrapper}>
         <Image
           source={logoImage}
-          style={styles.logo}
+          style={[styles.logo, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
+          resizeMode="contain" // Agrega resizeMode para ajustar la imagen
         />
-        <Image // Este es el nuevo componente Image para la segunda imagen
+        <Image
           source={logoNodImage}
-          style={styles.logoNod} // Estilo actualizado para el segundo logo
+          style={[styles.logoNod, { width: screenWidth * 0.4, height: screenHeight * 0.2 }]}
+          resizeMode="contain" // Agrega resizeMode para ajustar la imagen
         />
       </View>
 
@@ -55,6 +92,13 @@ const LoginScreen = () => {
           onChangeText={setPassword}
           value={password}
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Número de teléfono"
+          placeholderTextColor="#8e8e8e"
+          onChangeText={setNumber}
+          value={number}
+        />
       </View>
 
       {/* Login Button */}
@@ -64,7 +108,7 @@ const LoginScreen = () => {
 
       {/* Registration Button */}
       <TouchableOpacity style={styles.registrationButton} onPress={handleRegistration}>
-        <Text style={styles.registrationButtonText}>Reigistrar</Text>
+        <Text style={styles.registrationButtonText}>Registrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -75,27 +119,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff', // A light blue background color
+    backgroundColor: '#fff',
   },
   logoWrapper: {
-    marginBottom: 40,
-    alignItems: 'center',
-  },
-  logoWrapper: {
-    marginBottom: 40,
+    marginBottom: 20,
     alignItems: 'center',
   },
   logo: {
-    width: 700,
-    height: 120,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoNod: {
-    width: 150,
-    height: 120,
-    borderRadius: 70, // Makes it round
-    backgroundColor: '#FFFFFF', // Blue background for the logo
+    borderRadius: 70,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -104,33 +140,33 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    backgroundColor: '#fff', // White background for the input
+    backgroundColor: '#fff',
     marginBottom: 20,
     paddingHorizontal: 15,
-    borderRadius: 25, // Rounded corners for the input
+    borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#0833a2', // Light blue border
+    borderColor: '#0833a2',
   },
   button: {
-    backgroundColor: '#0073e6', // A darker blue for the button
+    backgroundColor: '#0073e6',
     paddingVertical: 15,
     paddingHorizontal: 35,
-    borderRadius: 25, // Rounded corners for the button
+    borderRadius: 25,
   },
   buttonText: {
-    color: '#fff', // White text for the button
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
   registrationButton: {
-    marginTop: 10, // Add some space between the login and registration buttons
-    backgroundColor: '#33cc33', // A green color for the registration button
+    marginTop: 10,
+    backgroundColor: '#33cc33',
     paddingVertical: 15,
     paddingHorizontal: 35,
-    borderRadius: 25, // Rounded corners for the button
+    borderRadius: 25,
   },
   registrationButtonText: {
-    color: '#fff', // White text for the registration button
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
