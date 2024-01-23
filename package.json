@@ -36,5 +36,8 @@
     "@expo/webpack-config": "^19.0.0",
     "webpack-dev-server": "^4.15.1"
   },
-  "private": true
+  "private": true,
+  "description": "",
+  "author": "",
+  "license": "ISC"
 }
